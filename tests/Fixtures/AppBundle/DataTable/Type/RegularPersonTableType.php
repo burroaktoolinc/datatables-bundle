@@ -16,14 +16,14 @@ use Omines\DataTablesBundle\Adapter\ArrayAdapter;
 use Omines\DataTablesBundle\Column\DateTimeColumn;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\DataTable;
-use Omines\DataTablesBundle\DataTableTypeInterface;
+use Omines\DataTablesBundle\DataTableType;
 
 /**
  * RegularPersonTableType.
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class RegularPersonTableType implements DataTableTypeInterface
+class RegularPersonTableType extends DataTableType
 {
     public function configure(DataTable $dataTable, array $optionss): void
     {

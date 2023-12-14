@@ -3,7 +3,10 @@ All notable changes to `omines\datatables-bundle` will be documented in this fil
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet.
+
+### Breaking
+ - Added DataTableType Abstract class, you can extend this instead of implementing DataTableTypeInterface to maintain BC with anything existing
+ - Changed DataTableTypeInterface to support resolver options for both the type itself, and for the datatable to encapsulate settings in a type
 
 ## [0.8.0] - 2023-12-05
 ### Breaking
