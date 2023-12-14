@@ -1,3 +1,7 @@
+$('#{{ datatable.name }}').on('stateLoaded.dt', function (e, settings, data) {
+    $('#{{ datatable.name }}-column-{{ column.index }}').val(data.columns[{{ column.index }}].search.search) ;
+});
+
 {#<script type="text/javascript">
     $(document).ready(function () {
         var defaults = {};
