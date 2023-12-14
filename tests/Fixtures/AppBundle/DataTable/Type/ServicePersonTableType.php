@@ -16,7 +16,7 @@ use Omines\DataTablesBundle\Adapter\Doctrine\ORM\SearchCriteriaProvider;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\DataTable;
-use Omines\DataTablesBundle\DataTableTypeInterface;
+use Omines\DataTablesBundle\DataTableType;
 use Symfony\Component\Routing\RouterInterface;
 use Tests\Fixtures\AppBundle\Entity\Employee;
 use Tests\Fixtures\AppBundle\Entity\Person;
@@ -26,7 +26,7 @@ use Tests\Fixtures\AppBundle\Entity\Person;
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class ServicePersonTableType implements DataTableTypeInterface
+class ServicePersonTableType extends DataTableType
 {
     /** @var RouterInterface */
     private $router;
