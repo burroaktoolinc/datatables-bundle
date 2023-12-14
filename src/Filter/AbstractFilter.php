@@ -20,6 +20,16 @@ abstract class AbstractFilter
     protected string $template_js;
     protected string $operator;
 
+    public function __construct(array $options = [])
+    {
+        $resolver = new OptionsResolver();
+        $this->configureOptions($resolver);
+
+        foreach ($resolver->resolve($options) as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
     /**
      * @param array<string, mixed> $options
      */
