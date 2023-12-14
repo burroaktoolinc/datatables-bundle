@@ -3,7 +3,11 @@ All notable changes to `omines\datatables-bundle` will be documented in this fil
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet.
+
+### Fixed
+- Added a constructor to the AbstractFilter class to avoid access before initialization on properties
+- Updated the "per filter" twig files 
+- Updated datatable_html.html.twig to generate tfoot/thead filters for per column filtering using set html/js files
 
 ## [0.8.0] - 2023-12-05
 ### Breaking
