@@ -35,11 +35,12 @@ class TwigColumn extends AbstractColumn
 
     protected function render($value, $context): mixed
     {
-        return $this->twig->render($this->getTemplate(), [
-            'row' => $context,
-            'value' => $value,
-            'column' => $this,
-        ]);
+	$parameters = $this->getParameters();
+        $parameters['row'] = $context;
+        $parameters['value'] = $value;
+        $parameters['column'] = $this;
+
+        return $this->twig->render($this->getTemplate(), $parameters);
     }
 
     public function normalize(mixed $value): mixed
