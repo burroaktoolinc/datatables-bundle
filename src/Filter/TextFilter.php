@@ -16,7 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TextFilter extends AbstractFilter
 {
-    protected ?string $placeholder = null;
 
     protected function configureOptions(OptionsResolver $resolver): static
     {
@@ -27,7 +26,12 @@ class TextFilter extends AbstractFilter
                 'template_html' => '@DataTables/Filter/text.html.twig',
                 'template_js' => '@DataTables/Filter/text.js.twig',
                 'placeholder' => null,
-            ])
+                'operator' => 'LIKE',
+                'rightExpr' => 
+                    function ($value) {
+                        return '%' . $value . '%';
+                    }
+                ])
             ->setAllowedTypes('placeholder', ['null', 'string']);
 
         return $this;
@@ -35,7 +39,7 @@ class TextFilter extends AbstractFilter
 
     public function getPlaceholder(): ?string
     {
-        return $this->placeholder;
+        return $this->options['placeholder'];
     }
 
     public function isValidValue(mixed $value): bool

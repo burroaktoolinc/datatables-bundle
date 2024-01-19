@@ -43,8 +43,15 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
                         continue;
                     }
                 }
-                $search = $queryBuilder->expr()->literal($search);
-                $queryBuilder->andWhere(new Comparison($column->getField(), $column->getOperator(), $search));
+
+                $field = $column->getField();
+                $queryBuilder->andWhere(
+                    new Comparison(
+                        $filter->getLeftExpr($field),
+                        $filter->getOperator(),
+                        $queryBuilder->expr()->literal($filter->getRightExpr($search))
+                    )
+                );
             }
         }
     }
