@@ -46,6 +46,13 @@ class ChoiceFilter extends AbstractFilter
         return $this->options['choices'];
     }
 
+    public function setChoices(array $choices): void
+    {
+        $this->options['choices'] = $choices;
+
+        return;
+    }
+
     public function isValidValue(mixed $value): bool
     {
         return array_key_exists($value, $this->options['choices']);
