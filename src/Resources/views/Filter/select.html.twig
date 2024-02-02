@@ -7,7 +7,15 @@
             <option class="placeholder">{{ column.filter.placeholder|trans }}</option>
         {% endif %}
         {% for key, choice in column.filter.choices %}
+            {% if column.filter.optgroup %}
+            <optgroup label="{{ key }}">
+            {% for optkey, optchoice in choice %}
+                    <option value="{{ optkey }}">{{ optchoice }}</option>
+            {% endfor %}
+            </optgroup>
+            {% else %}
             <option value="{{ key }}">{{ choice }}</option>
+            {% endif %}
         {% endfor %}
     </select>
 </label>

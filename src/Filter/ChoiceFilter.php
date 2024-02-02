@@ -26,9 +26,11 @@ class ChoiceFilter extends AbstractFilter
                 'template_js' => '@DataTables/Filter/select.js.twig',
                 'placeholder' => null,
                 'choices' => [],
+                'optgroup' => false,
             ])
             ->setAllowedTypes('placeholder', ['null', 'string'])
-            ->setAllowedTypes('choices', ['array']);
+            ->setAllowedTypes('choices', ['array'])
+            ->setAllowedTypes('optgroup', ['bool']);
 
         return $this;
     }
@@ -36,6 +38,11 @@ class ChoiceFilter extends AbstractFilter
     public function getPlaceholder(): ?string
     {
         return $this->options['placeholder'];
+    }
+
+    public function getOptGroup(): bool
+    {
+        return $this->options['optgroup'];
     }
 
     /**
@@ -55,6 +62,15 @@ class ChoiceFilter extends AbstractFilter
 
     public function isValidValue(mixed $value): bool
     {
+        if($this->getOptGroup()) {
+            foreach($this->options['choices'] as $choices) {
+                if(array_key_exists($value, $choices)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         return array_key_exists($value, $this->options['choices']);
     }
 }
