@@ -296,13 +296,20 @@ class DataTable
         return array_merge($this->getOptions(), [
             'columns' => array_map(
                 function (AbstractColumn $column) {
-                    return [
+                    $settings = [
                         'data' => $column->getName(),
                         'orderable' => $column->isOrderable(),
                         'searchable' => $column->isSearchable(),
                         'visible' => $column->isVisible(),
                         'className' => $column->getClassName(),
                     ];
+
+                    if($options = $column->getColumnOptions())
+                    {
+                        $settings = $settings += $options;
+                    }
+
+                    return $settings;
                 }, $this->getColumns()
             ),
         ]);

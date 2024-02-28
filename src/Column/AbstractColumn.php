@@ -125,6 +125,9 @@ abstract class AbstractColumn
             ->setAllowedTypes('rightExpr', ['null', 'string', 'callable'])
         ;
 
+	$resolver->setDefined(['options']);
+        $resolver->setAllowedTypes('options', ['array', 'null']);
+
         return $this;
     }
 
@@ -222,6 +225,11 @@ abstract class AbstractColumn
     public function getClassName(): ?string
     {
         return $this->options['className'] ?? null;
+    }
+
+    public function getColumnOptions(): ?array
+    {
+        return $this->options['options'] ?? null;
     }
 
     public function getDataTable(): DataTable
