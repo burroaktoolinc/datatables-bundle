@@ -61,4 +61,12 @@ class FilterTest extends TestCase
         $this->assertSame('foobar.js', $filter->getTemplateJs());
         $this->assertSame('baz', $filter->getPlaceholder());
     }
+
+    public function testFilterConfig(): void
+    {
+        // Error: Typed property Omines\DataTablesBundle\Filter\AbstractFilter::$template_html must not be accessed before initialization
+        $filter = new TextFilter();
+
+        $this->assertSame('@DataTables/Filter/text.html.twig', $filter->getTemplateHtml());
+    }
 }

@@ -25,7 +25,12 @@ class TextFilter extends AbstractFilter
                 'template_html' => '@DataTables/Filter/text.html.twig',
                 'template_js' => '@DataTables/Filter/text.js.twig',
                 'placeholder' => null,
-            ])
+                'operator' => 'LIKE',
+                'rightExpr' => 
+                    function ($value) {
+                        return '%' . $value . '%';
+                    }
+                ])
             ->setAllowedTypes('placeholder', ['null', 'string']);
 
         return $this;

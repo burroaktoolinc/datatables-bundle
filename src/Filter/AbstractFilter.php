@@ -21,10 +21,12 @@ abstract class AbstractFilter
      */
     protected array $options = [];
 
-    public function __construct()
+    public function __construct(array $options = [])
     {
-        // Initialize the options with the default values set on the OptionsResolver
-        $this->set([]);
+        $resolver = new OptionsResolver();
+        $this->configureOptions($resolver);
+
+        $this->options = $resolver->resolve($options);
     }
 
     /**
@@ -35,16 +37,25 @@ abstract class AbstractFilter
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
         $this->options = $resolver->resolve($options);
-
         return $this;
     }
 
     protected function configureOptions(OptionsResolver $resolver): static
     {
-        $resolver->setRequired([
-            'template_html',
-            'template_js',
-        ]);
+        $resolver
+            ->setDefaults([
+                'template_html' => null,
+                'template_js' => null,
+                'leftExpr' => null,
+                'operator' => '=',
+                'rightExpr' => null,
+            ])
+            ->setAllowedTypes('template_html', ['null', 'string'])
+            ->setAllowedTypes('template_js', ['null', 'string', 'callable'])
+            ->setAllowedTypes('operator', ['string'])
+            ->setAllowedTypes('leftExpr', ['null', 'string', 'callable'])
+            ->setAllowedTypes('rightExpr', ['null', 'string', 'callable'])
+        ;
 
         return $this;
     }
@@ -59,5 +70,37 @@ abstract class AbstractFilter
         return $this->options['template_js'];
     }
 
+    public function getLeftExpr(?string $field): mixed
+    {
+        $leftExpr = $this->options['leftExpr'];
+        if (null === $leftExpr) {
+            return $field;
+        }
+        if (is_callable($leftExpr)) {
+            return call_user_func($leftExpr, $field);
+        }
+
+        return $leftExpr;
+    }
+
+    public function getRightExpr(mixed $value): mixed
+    {
+        $rightExpr = $this->options['rightExpr'];
+        if (null === $rightExpr) {
+            return $value;
+        }
+        if (is_callable($rightExpr)) {
+            return call_user_func($rightExpr, $value);
+        }
+
+        return $rightExpr;
+    }
+
+    public function getOperator(): string
+    {
+        return $this->options['operator'];
+    }
+
     abstract public function isValidValue(mixed $value): bool;
 }
+

@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Added a constructor to the AbstractFilter class to avoid access before initialization on properties
+- Updated the "per filter" twig files 
+- Updated datatable_html.html.twig to generate tfoot/thead filters for per column filtering using set html/js files
+
 ### Breaking
  - Added DataTableType Abstract class, you can extend this instead of implementing DataTableTypeInterface to maintain BC with anything existing
  - Changed DataTableTypeInterface to support resolver options for both the type itself, and for the datatable to encapsulate settings in a type

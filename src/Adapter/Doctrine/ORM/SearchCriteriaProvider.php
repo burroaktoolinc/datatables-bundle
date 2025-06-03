@@ -66,7 +66,7 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
     private function getSearchComparison(AbstractColumn $column, string $search): Comparison
     {
         return new Comparison(
-            $column->getLeftExpr(),
+            $column->getLeftExpr($column->getField()),
             $column->getOperator(),
             (new Expr())->literal($column->getRightExpr($search)),
         );
