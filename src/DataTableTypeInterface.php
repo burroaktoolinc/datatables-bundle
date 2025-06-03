@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Omines\DataTablesBundle;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
 /**
  * DataTableTypeInterface.
  *
@@ -23,4 +25,14 @@ interface DataTableTypeInterface
      * @param array<string, mixed> $options
      */
     public function configure(DataTable $dataTable, array $options): void;
+
+    /**
+     * Configures the options for this type.
+     */
+    public function configureOptions(OptionsResolver $resolver): void;
+
+    /**
+     * Configures the options for this table.
+     */
+    public function configureTableOptions(OptionsResolver $resolver): void;
 }

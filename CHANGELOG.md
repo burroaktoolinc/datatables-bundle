@@ -5,6 +5,12 @@ For more recent changelogs refer to Github releases page at https://github.com/o
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Breaking
+ - Added DataTableType Abstract class, you can extend this instead of implementing DataTableTypeInterface to maintain BC with anything existing
+ - Changed DataTableTypeInterface to support resolver options for both the type itself, and for the datatable to encapsulate settings in a type
+
 ## 0.9.0
 ### Added
  - Support Doctrine ORM 3 and DBAL 4

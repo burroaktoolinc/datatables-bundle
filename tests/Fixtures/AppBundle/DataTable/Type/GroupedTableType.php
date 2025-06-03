@@ -17,7 +17,7 @@ use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\DataTable;
-use Omines\DataTablesBundle\DataTableTypeInterface;
+use Omines\DataTablesBundle\DataTableType;
 use Tests\Fixtures\AppBundle\Entity\Company;
 
 /**
@@ -25,7 +25,7 @@ use Tests\Fixtures\AppBundle\Entity\Company;
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class GroupedTableType implements DataTableTypeInterface
+class GroupedTableType extends DataTableType
 {
     public function configure(DataTable $dataTable, array $options): void
     {

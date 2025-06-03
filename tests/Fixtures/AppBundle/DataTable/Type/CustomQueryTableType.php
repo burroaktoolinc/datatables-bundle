@@ -19,7 +19,7 @@ use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\Column\TwigColumn;
 use Omines\DataTablesBundle\DataTable;
-use Omines\DataTablesBundle\DataTableTypeInterface;
+use Omines\DataTablesBundle\DataTableType;
 use Tests\Fixtures\AppBundle\Entity\Employee;
 use Tests\Fixtures\AppBundle\Entity\Person;
 
@@ -28,7 +28,7 @@ use Tests\Fixtures\AppBundle\Entity\Person;
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class CustomQueryTableType implements DataTableTypeInterface
+class CustomQueryTableType extends DataTableType
 {
     public function configure(DataTable $dataTable, array $options): void
     {
