@@ -7,6 +7,7 @@
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
+import jQuery from 'jquery';
 
 (function($) {
     /**
@@ -78,12 +79,7 @@
                             if (Object.keys(state).length) {
                                 var api = new $.fn.dataTable.Api( settings );
                                 var merged = Object.assign({}, api.state(), state)
-                                api
-                                    .order(Array.isArray(merged.order) && merged.order.length > 0 ? merged.order : api.state().order)
-                                    .search(merged.search.search)
-                                    .page.len(merged.length)
-                                    .page(merged.start / merged.length)
-                                    .draw(false);
+                                api.state(merged).draw(false);
                             }
                         } else {
                             request._dt = config.name;
