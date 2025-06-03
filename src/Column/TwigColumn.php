@@ -25,7 +25,7 @@ class TwigColumn extends AbstractColumn
 {
     protected readonly Environment $twig;
 
-    public function __construct(Environment $twig = null)
+    public function __construct(?Environment $twig = null)
     {
         if (null === $twig) {
             throw new MissingDependencyException('You must have TwigBundle installed to use ' . static::class);
@@ -60,7 +60,13 @@ class TwigColumn extends AbstractColumn
             ->setAllowedValues('parameters', static function (array $parameters) {
                 return !(array_key_exists('row', $parameters) || array_key_exists('value', $parameters));
             })
-        ;
+            ->setDefault('operator', 'LIKE')
+            ->setDefault(
+                'rightExpr',
+                function ($value) {
+                    return '%' . $value . '%';
+                }
+            );
 
         return $this;
     }

@@ -24,9 +24,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 abstract class AbstractColumn
 {
-    /** @var array<string, OptionsResolver> */
-    private static array $resolversByClass = [];
-
     private string $name;
     private int $index;
     private DataTable $dataTable;
@@ -43,12 +40,9 @@ abstract class AbstractColumn
         $this->index = $index;
         $this->dataTable = $dataTable;
 
-        $class = get_class($this);
-        if (!isset(self::$resolversByClass[$class])) {
-            self::$resolversByClass[$class] = new OptionsResolver();
-            $this->configureOptions(self::$resolversByClass[$class]);
-        }
-        $this->options = self::$resolversByClass[$class]->resolve($options);
+        $resolver = new OptionsResolver();
+        $this->configureOptions($resolver);
+        $this->options = $resolver->resolve($options);
     }
 
     /**
@@ -56,8 +50,9 @@ abstract class AbstractColumn
      *
      * @param mixed $value The single value of the column, if mapping makes it possible to derive one
      * @param mixed $context All relevant data of the entire row
+     * @param bool $raw if true, will not normalize the value to string and will not call `AbstractColumn::render()`
      */
-    public function transform(mixed $value = null, mixed $context = null): mixed
+    public function transform(mixed $value = null, mixed $context = null, bool $raw = false): mixed
     {
         $data = $this->getData();
         if (is_callable($data)) {
@@ -66,7 +61,7 @@ abstract class AbstractColumn
             $value = $data;
         }
 
-        return $this->render($this->normalize($value), $context);
+        return ($raw && $this->options['enableRawExport']) ? $value : $this->render($this->normalize($value), $context);
     }
 
     /**
@@ -107,6 +102,8 @@ abstract class AbstractColumn
                 'leftExpr' => null,
                 'operator' => '=',
                 'rightExpr' => null,
+                'enableRawExport' => false,
+                'exporterOptions' => [],
             ])
             ->setAllowedTypes('label', ['null', 'string'])
             ->setAllowedTypes('data', ['null', 'string', 'callable'])
@@ -123,6 +120,10 @@ abstract class AbstractColumn
             ->setAllowedTypes('operator', ['string'])
             ->setAllowedTypes('leftExpr', ['null', 'string', 'callable'])
             ->setAllowedTypes('rightExpr', ['null', 'string', 'callable'])
+            ->setAllowedTypes('enableRawExport', ['bool'])
+            ->setAllowedTypes('exporterOptions', ['array'])
+            ->setInfo('enableRawExport', 'When true, skips normalize() and render() during raw transforms.')
+            ->setInfo('exporterOptions', 'Specific exporter options can be specified here, where the key is the exporter name and the value is an array of options.')
         ;
 
         return $this;
@@ -244,5 +245,14 @@ abstract class AbstractColumn
     public function isValidForSearch(mixed $value): bool
     {
         return true;
+    }
+
+    /**
+     * @param string $exporterName one of the exporter names as returned by DataTableExporterInterface::getName()
+     * @return array<string, mixed>
+     */
+    public function getExporterOptions(string $exporterName): array
+    {
+        return $this->options['exporterOptions'][$exporterName] ?? [];
     }
 }

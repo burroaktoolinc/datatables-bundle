@@ -16,11 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ChoiceFilter extends AbstractFilter
 {
-    protected ?string $placeholder = null;
-
-    /** @var array<string, string> */
-    protected array $choices = [];
-
     protected function configureOptions(OptionsResolver $resolver): static
     {
         parent::configureOptions($resolver);
@@ -31,16 +26,23 @@ class ChoiceFilter extends AbstractFilter
                 'template_js' => '@DataTables/Filter/select.js.twig',
                 'placeholder' => null,
                 'choices' => [],
+                'optgroup' => false,
             ])
             ->setAllowedTypes('placeholder', ['null', 'string'])
-            ->setAllowedTypes('choices', ['array']);
+            ->setAllowedTypes('choices', ['array'])
+            ->setAllowedTypes('optgroup', ['bool']);
 
         return $this;
     }
 
     public function getPlaceholder(): ?string
     {
-        return $this->placeholder;
+        return $this->options['placeholder'];
+    }
+
+    public function getOptGroup(): bool
+    {
+        return $this->options['optgroup'];
     }
 
     /**
@@ -48,11 +50,27 @@ class ChoiceFilter extends AbstractFilter
      */
     public function getChoices(): array
     {
-        return $this->choices;
+        return $this->options['choices'];
+    }
+
+    public function setChoices(array $choices): void
+    {
+        $this->options['choices'] = $choices;
+
+        return;
     }
 
     public function isValidValue(mixed $value): bool
     {
-        return array_key_exists($value, $this->choices);
+        if($this->getOptGroup()) {
+            foreach($this->options['choices'] as $choices) {
+                if(array_key_exists($value, $choices)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return array_key_exists($value, $this->options['choices']);
     }
 }
