@@ -16,6 +16,8 @@ use Omines\DataTablesBundle\Adapter\AdapterInterface;
 use Omines\DataTablesBundle\Adapter\ResultSetInterface;
 use Omines\DataTablesBundle\Column\AbstractColumn;
 use Omines\DataTablesBundle\DependencyInjection\Instantiator;
+use Omines\DataTablesBundle\Event\DataTablePostResponseEvent;
+use Omines\DataTablesBundle\Event\DataTablePreResponseEvent;
 use Omines\DataTablesBundle\Exception\InvalidArgumentException;
 use Omines\DataTablesBundle\Exception\InvalidConfigurationException;
 use Omines\DataTablesBundle\Exception\InvalidStateException;
@@ -92,7 +94,7 @@ class DataTable
     /**
      * @param array<string, mixed> $options
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher, DataTableExporterManager $exporterManager, array $options = [], Instantiator $instantiator = null)
+    public function __construct(EventDispatcherInterface $eventDispatcher, DataTableExporterManager $exporterManager, array $options = [], ?Instantiator $instantiator = null)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->exporterManager = $exporterManager;
@@ -119,6 +121,28 @@ class DataTable
 
         $this->columns[] = $column;
         $this->columnsByName[$name] = $column;
+
+        return $this;
+    }
+
+    public function remove(string $name): static
+    {
+        if (!isset($this->columnsByName[$name])) {
+            throw new InvalidArgumentException(sprintf("There is no column with name '%s'", $name));
+        }
+
+        $column = $this->columnsByName[$name];
+        unset($this->columnsByName[$name]);
+        $index = array_search($column, $this->columns, true);
+        unset($this->columns[$index]);
+
+        return $this;
+    }
+
+    public function clearColumns(): static
+    {
+        $this->columns = [];
+        $this->columnsByName = [];
 
         return $this;
     }
@@ -263,14 +287,19 @@ class DataTable
 
     public function getResponse(): Response
     {
+        $this->eventDispatcher->dispatch(new DataTablePreResponseEvent($this), DataTableEvents::PRE_RESPONSE);
+
         $state = $this->getState();
 
         // Server side export
         if (null !== $state->getExporterName()) {
-            return $this->exporterManager
+            $response = $this->exporterManager
                 ->setDataTable($this)
                 ->setExporterName($state->getExporterName())
                 ->getResponse();
+            $this->eventDispatcher->dispatch(new DataTablePostResponseEvent($this), DataTableEvents::POST_RESPONSE);
+
+            return $response;
         }
 
         $resultSet = $this->getResultSet();
@@ -284,6 +313,8 @@ class DataTable
             $response['options'] = $this->getInitialResponse();
             $response['template'] = $this->renderer->renderDataTable($this, $this->template, $this->templateParams);
         }
+
+        $this->eventDispatcher->dispatch(new DataTablePostResponseEvent($this), DataTableEvents::POST_RESPONSE);
 
         return new JsonResponse($response);
     }
@@ -338,7 +369,7 @@ class DataTable
     /**
      * @param ?array<string, mixed> $options
      */
-    public function setAdapter(AdapterInterface $adapter, array $options = null): static
+    public function setAdapter(AdapterInterface $adapter, ?array $options = null): static
     {
         if (null !== $options) {
             $adapter->configure($options);

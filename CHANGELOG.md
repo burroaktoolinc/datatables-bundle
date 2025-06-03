@@ -1,5 +1,8 @@
 # Changelog
-All notable changes to `omines\datatables-bundle` will be documented in this file.
+All notable changes to `omines\datatables-bundle` were documented in this file up to 0.9.0
+
+For more recent changelogs refer to Github releases page at https://github.com/omines/datatables-bundle/releases
+
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
@@ -7,6 +10,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Breaking
  - Added DataTableType Abstract class, you can extend this instead of implementing DataTableTypeInterface to maintain BC with anything existing
  - Changed DataTableTypeInterface to support resolver options for both the type itself, and for the datatable to encapsulate settings in a type
+
+## 0.9.0
+### Added
+ - Support Doctrine ORM 3 and DBAL 4
+
+### Breaking
+ - Remove support for partial DQL queries in `AutomaticQueryBuilder`
+
+## [0.8.2] - 2024-03-24
+### Added
+ - Add Excel OpenSpout exporter (#332)
+
+### Fixed
+ - Make Twig columns searchable by default
+
+## [0.8.1] - 2024-02-24
+### Added
+ - Support PHPoffice v2 (#330)
+
+### Changed
+ - Adding empty string as a value and making column search parameter optional in request body (#323)
+ - Upgrade to PHPunit v11
+ - Fix deprecations in test suite
 
 ## [0.8.0] - 2023-12-05
 ### Breaking
@@ -183,7 +209,9 @@ or break any applications.
 ### Added
  - Basic functionality
 
-[Unreleased]: https://github.com/omines/datatables-bundle/compare/0.8.0...master
+[Unreleased]: https://github.com/omines/datatables-bundle/compare/0.8.2...master
+[0.8.2]: https://github.com/omines/datatables-bundle/compare/0.8.1...0.8.2
+[0.8.1]: https://github.com/omines/datatables-bundle/compare/0.8.0...0.8.1
 [0.8.0]: https://github.com/omines/datatables-bundle/compare/0.7.2...0.8.0
 [0.7.2]: https://github.com/omines/datatables-bundle/compare/0.7.1...0.7.2
 [0.7.1]: https://github.com/omines/datatables-bundle/compare/0.7.0...0.7.1
