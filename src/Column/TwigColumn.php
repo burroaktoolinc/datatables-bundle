@@ -35,11 +35,12 @@ class TwigColumn extends AbstractColumn
 
     protected function render($value, $context): mixed
     {
-        return $this->twig->render($this->getTemplate(), [
-            'row' => $context,
-            'value' => $value,
-            'column' => $this,
-        ]);
+	$parameters = $this->getParameters();
+        $parameters['row'] = $context;
+        $parameters['value'] = $value;
+        $parameters['column'] = $this;
+
+        return $this->twig->render($this->getTemplate(), $parameters);
     }
 
     public function normalize(mixed $value): mixed
@@ -54,6 +55,11 @@ class TwigColumn extends AbstractColumn
         $resolver
             ->setRequired('template')
             ->setAllowedTypes('template', 'string')
+            ->setDefault('parameters', [])
+            ->setAllowedTypes('parameters', 'array')
+            ->setAllowedValues('parameters', static function (array $parameters) {
+                return !(array_key_exists('row', $parameters) || array_key_exists('value', $parameters));
+            })
             ->setDefault('operator', 'LIKE')
             ->setDefault(
                 'rightExpr',
@@ -68,5 +74,10 @@ class TwigColumn extends AbstractColumn
     public function getTemplate(): string
     {
         return $this->options['template'];
+    }
+
+    public function getParameters(): array
+    {
+        return $this->options['parameters'];
     }
 }
