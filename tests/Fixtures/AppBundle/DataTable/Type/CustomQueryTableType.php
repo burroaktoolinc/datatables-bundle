@@ -17,8 +17,9 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
+use Omines\DataTablesBundle\Column\TwigColumn;
 use Omines\DataTablesBundle\DataTable;
-use Omines\DataTablesBundle\DataTableTypeInterface;
+use Omines\DataTablesBundle\DataTableType;
 use Tests\Fixtures\AppBundle\Entity\Employee;
 use Tests\Fixtures\AppBundle\Entity\Person;
 
@@ -27,13 +28,13 @@ use Tests\Fixtures\AppBundle\Entity\Person;
  *
  * @author Niels Keurentjes <niels.keurentjes@omines.com>
  */
-class CustomQueryTableType implements DataTableTypeInterface
+class CustomQueryTableType extends DataTableType
 {
     public function configure(DataTable $dataTable, array $options): void
     {
         $dataTable
             ->add('firstName', TextColumn::class)
-            ->add('lastName', TextColumn::class)
+            ->add('lastName', TwigColumn::class, ['template' => '@App/lastname_cell.html.twig'])
             ->add('fullName', TextColumn::class)
             ->add('company', TextColumn::class, ['field' => 'c.name'])
             ->createAdapter(ORMAdapter::class, [

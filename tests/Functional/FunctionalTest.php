@@ -81,6 +81,8 @@ class FunctionalTest extends WebTestCase
         $this->assertSame('George W.', $json->data[0]->firstName);
         $this->assertSame('BUSH', $json->data[0]->lastName);
         $this->assertSame('01-01-2017', $json->data[0]->lastActivity);
+        $this->assertSame('bush@example.org', $json->data[0]->email);
+        $this->assertObjectNotHasProperty('dummy', $json->data[0]);
 
         $json = $this->callDataTableUrl('/type?_dt=persons&draw=1&search[value]=Bush');
 
@@ -100,6 +102,17 @@ class FunctionalTest extends WebTestCase
         $this->assertCount(2, $json->data);
         $this->assertStringStartsWith('Company ', $json->data[0]->company);
         $this->assertSame('LastName24 (Company 4)', $json->data[0]->fullName);
+
+        // A column search should be based on substring matching by default (same as global
+        // search). Not on exact matching.
+        $json = $this->callDataTableUrl('/service?_dt=persons&draw=2&order[0][column]=2&order[0][dir]=desc&columns[1][search][value]=name24');
+        $this->assertCount(1, $json->data);
+        $this->assertSame('LastName24 (Company 4)', $json->data[0]->fullName);
+
+        // Search for `LastName1` in the first name column should return no results. This
+        // tests that the column search only applies to the specified column.
+        $json = $this->callDataTableUrl('/service?_dt=persons&draw=2&order[0][column]=2&order[0][dir]=desc&columns[1][search][value]=LastName1');
+        $this->assertCount(0, $json->data);
     }
 
     public function testCustomDataTable(): void
@@ -132,13 +145,16 @@ class FunctionalTest extends WebTestCase
         $this->client->request('GET', sprintf('/%s/translation', $locale));
         $this->assertSuccessful($response = $this->client->getResponse());
 
-        $content = $response->getContent();
+        $content = $response->getContent() ?: 'Empty content';
         $this->assertStringContainsString('"name":"noCDN"', $content);
         $this->assertStringNotContainsString('"options":{"language":{"url"', $content);
         $this->assertStringContainsString(sprintf('"processing":"%s"', $languageProcessing), $content);
         $this->assertStringContainsString(sprintf('"infoFiltered":"%s"', $languageInfoFiltered), $content);
     }
 
+    /**
+     * @return string[][]
+     */
     public static function translationProvider(): array
     {
         return [

@@ -16,6 +16,7 @@ use Omines\DataTablesBundle\DependencyInjection\Instantiator;
 use Omines\DataTablesBundle\Exporter\DataTableExporterManager;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DataTableFactory
 {
@@ -61,8 +62,7 @@ class DataTableFactory
      */
     public function createFromType(DataTableTypeInterface|string $type, array $typeOptions = [], array $options = []): DataTable
     {
-        $dataTable = $this->create($options);
-
+        // Resolve our type
         if (is_string($type)) {
             $name = $type;
             if (isset($this->resolvedTypes[$name])) {
@@ -72,6 +72,20 @@ class DataTableFactory
             }
         }
 
+        // Resolve table options and create datatable
+        $optionsResolver = new OptionsResolver();
+        // How to get the defaults that datatable class sets
+        // This is ugly but I don't want to redesign types
+        $optionsResolver->setDefaults(DataTable::DEFAULT_OPTIONS);
+        $type->configureTableOptions($optionsResolver);
+        $options = $optionsResolver->resolve($options);
+
+        $dataTable = $this->create($options);
+
+        // Resolve type options and configure datatable
+        $optionsResolver = new OptionsResolver();
+        $type->configureOptions($optionsResolver);
+        $typeOptions = $optionsResolver->resolve($typeOptions);
         $type->configure($dataTable, $typeOptions);
 
         return $dataTable;

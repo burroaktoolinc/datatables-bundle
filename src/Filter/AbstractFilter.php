@@ -16,8 +16,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractFilter
 {
-    /** @var array<string, mixed> */
-    protected array $options;
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $options = [];
 
     public function __construct(array $options = [])
     {
@@ -30,12 +32,12 @@ abstract class AbstractFilter
     /**
      * @param array<string, mixed> $options
      */
-    public function set(array $options): void
+    public function set(array $options): static
     {
         $resolver = new OptionsResolver();
         $this->configureOptions($resolver);
-
         $this->options = $resolver->resolve($options);
+        return $this;
     }
 
     protected function configureOptions(OptionsResolver $resolver): static

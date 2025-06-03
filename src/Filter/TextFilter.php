@@ -16,7 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TextFilter extends AbstractFilter
 {
-
     protected function configureOptions(OptionsResolver $resolver): static
     {
         parent::configureOptions($resolver);

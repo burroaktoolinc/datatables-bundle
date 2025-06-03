@@ -12,7 +12,8 @@ declare(strict_types=1);
 
 namespace Omines\DataTablesBundle\Exporter\Excel;
 
-use Omines\DataTablesBundle\Exporter\DataTableExporterInterface;
+use Omines\DataTablesBundle\Exporter\AbstractDataTableExporter;
+use PhpOffice\PhpSpreadsheet\Cell\CellAddress;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Helper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -24,12 +25,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  *
  * @author Maxime Pinot <contact@maximepinot.com>
  */
-class ExcelExporter implements DataTableExporterInterface
+class ExcelExporter extends AbstractDataTableExporter
 {
-    /**
-     * @param mixed[] $columnNames
-     */
-    public function export(array $columnNames, \Iterator $data): \SplFileInfo
+    #[\Override]
+    public function export(array $columnNames, \Iterator $data, array $columnOptions): \SplFileInfo
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getSheet(0);
@@ -42,7 +41,7 @@ class ExcelExporter implements DataTableExporterInterface
         foreach ($data as $row) {
             $colIndex = 1;
             foreach ($row as $value) {
-                $sheet->setCellValueByColumnAndRow($colIndex++, $rowIndex, $htmlHelper->toRichTextObject($value));
+                $sheet->getCell(CellAddress::fromColumnAndRow($colIndex++, $rowIndex))->setValue($htmlHelper->toRichTextObject($value ?? ''));
             }
             ++$rowIndex;
         }
