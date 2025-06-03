@@ -51,10 +51,16 @@ class DataTable
         'autoWidth' => false,
         'order' => [],
         'searchDelay' => 400,
-        'dom' => 'lftrip',
         'orderCellsTop' => true,
         'stateSave' => false,
         'fixedHeader' => false,
+    ];
+
+    public const DEFINED_OPTIONS = [
+        'buttons',
+        'dom',
+        'responsive',
+        'colReorder',
     ];
 
     public const DEFAULT_TEMPLATE = '@DataTables/datatable_html.html.twig';
@@ -451,6 +457,8 @@ class DataTable
     protected function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(self::DEFAULT_OPTIONS);
+
+        $resolver->setDefined(self::DEFINED_OPTIONS);
 
         return $this;
     }
