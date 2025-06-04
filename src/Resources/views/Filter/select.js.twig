@@ -1,1 +1,3 @@
-$('#{{ datatable.name }}-column-{{ column.index }}').val(data.columns[{{ column.index }}].search.search) ;
+$('#{{ datatable.name }}').on('stateLoaded.dt', function (e, settings, data) {
+    $('#{{ datatable.name }}-column-{{ column.index }}').val(data.columns[{{ column.index }}].search.search);
+});
