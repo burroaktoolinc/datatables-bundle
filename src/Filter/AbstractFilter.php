@@ -45,6 +45,16 @@ abstract class AbstractFilter
             'template_html',
             'template_js',
         ]);
+        $resolver
+            ->setDefaults([
+                'leftExpr' => null,
+                'operator' => '=',
+                'rightExpr' => null,
+            ])
+            ->setAllowedTypes('operator', ['string'])
+            ->setAllowedTypes('leftExpr', ['null', 'string', 'callable'])
+            ->setAllowedTypes('rightExpr', ['null', 'string', 'callable'])
+        ;
 
         return $this;
     }
@@ -57,6 +67,37 @@ abstract class AbstractFilter
     public function getTemplateJs(): string
     {
         return $this->options['template_js'];
+    }
+
+    public function getLeftExpr(?string $field): mixed
+    {
+        $leftExpr = $this->options['leftExpr'];
+        if (null === $leftExpr) {
+            return $field;
+        }
+        if (is_callable($leftExpr)) {
+            return call_user_func($leftExpr, $field);
+        }
+
+        return $leftExpr;
+    }
+
+    public function getRightExpr(mixed $value): mixed
+    {
+        $rightExpr = $this->options['rightExpr'];
+        if (null === $rightExpr) {
+            return $value;
+        }
+        if (is_callable($rightExpr)) {
+            return call_user_func($rightExpr, $value);
+        }
+
+        return $rightExpr;
+    }
+
+    public function getOperator(): string
+    {
+        return $this->options['operator'];
     }
 
     abstract public function isValidValue(mixed $value): bool;
