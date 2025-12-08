@@ -4,20 +4,6 @@ parameters:
         - src
     ignoreErrors:
         - '#FetchJoinORMOptions contains unresolvable type#'
-
-        # Symfony Config component is not compatible with high PHPstan levels yet
-        - '#Symfony\\Component\\Config\\Definition\\Builder#'
-
-        # Silence some errors until config modernization is complete
-        -
-            message: '#EntityManager::getRepository#'
-            reportUnmatched: false
-        -
-            message: '#Mapping\\ClassMetadata>#'
-            reportUnmatched: false
-
-        # New PHPStan 2 errors
-        - { identifier: missingType.generics }
     excludePaths:
         # We're not really testing these 2 barely supported adapters
         - src/Adapter/Elasticsearch

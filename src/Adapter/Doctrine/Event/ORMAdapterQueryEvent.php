@@ -15,18 +15,18 @@ namespace Omines\DataTablesBundle\Adapter\Doctrine\Event;
 use Doctrine\ORM\Query;
 use Symfony\Contracts\EventDispatcher\Event;
 
-/**
- * @author Maxime Pinot <contact@maximepinot.com>
- */
 class ORMAdapterQueryEvent extends Event
 {
+    /** @var Query<mixed> */
     protected Query $query;
 
+    /** @param Query<mixed> $query */
     public function __construct(Query $query)
     {
         $this->query = $query;
     }
 
+    /** @return Query<mixed> */
     public function getQuery(): Query
     {
         return $this->query;

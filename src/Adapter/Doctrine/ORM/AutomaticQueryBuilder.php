@@ -18,17 +18,15 @@ use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Column\AbstractColumn;
 use Omines\DataTablesBundle\DataTableState;
 
-/**
- * AutomaticQueryBuilder.
- *
- * @author Niels Keurentjes <niels.keurentjes@omines.com>
- */
 class AutomaticQueryBuilder implements QueryBuilderProcessorInterface
 {
     private const DEFAULT_ALIAS = 'entity';
 
     private EntityManagerInterface $em;
+
+    /** @var ClassMetadata<object> */
     private ClassMetadata $metadata;
+
     private string $entityShortName;
 
     /** @var class-string */
@@ -40,6 +38,9 @@ class AutomaticQueryBuilder implements QueryBuilderProcessorInterface
     /** @var array<string, string[]> */
     private array $joins = [];
 
+    /**
+     * @param ClassMetadata<object> $metadata
+     */
     public function __construct(EntityManagerInterface $em, ClassMetadata $metadata)
     {
         $this->em = $em;
@@ -116,6 +117,9 @@ class AutomaticQueryBuilder implements QueryBuilderProcessorInterface
         }
     }
 
+    /**
+     * @param ClassMetadata<object> $metadata
+     */
     private function getIdentifier(ClassMetadata $metadata): string
     {
         $identifiers = $metadata->getIdentifierFieldNames();
@@ -123,11 +127,15 @@ class AutomaticQueryBuilder implements QueryBuilderProcessorInterface
         return array_shift($identifiers) ?? throw new \LogicException(sprintf('Class %s has no identifiers', $metadata->getName()));
     }
 
+    /**
+     * @param ClassMetadata<object> $metadata
+     * @return ClassMetadata<object>
+     */
     private function setIdentifierFromAssociation(string $association, string $key, ClassMetadata $metadata): ClassMetadata
     {
         $targetEntityClass = $metadata->getAssociationTargetClass($key);
 
-        /** @var ClassMetadata $targetMetadata */
+        /** @var ClassMetadata<object> $targetMetadata */
         $targetMetadata = $this->em->getMetadataFactory()->getMetadataFor($targetEntityClass);
         $this->addSelectColumn($association, $this->getIdentifier($targetMetadata));
 
