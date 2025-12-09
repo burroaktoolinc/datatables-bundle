@@ -51,6 +51,8 @@ class ORMAdapter extends AbstractAdapter
 {
     private ManagerRegistry $registry;
     protected EntityManager $manager;
+
+    /** @var ClassMetadata<object> */
     protected ClassMetadata $metadata;
 
     /** @var ?HydrationMode */
@@ -120,7 +122,7 @@ class ORMAdapter extends AbstractAdapter
     }
 
     /**
-     * @return array<string, array<string|int|null, ClassMetadata|string|null>>
+     * @return array<string, array<string|int|null, ClassMetadata<object>|string|null>>
      */
     protected function getAliases(AdapterQuery $query): array
     {
@@ -143,8 +145,10 @@ class ORMAdapter extends AbstractAdapter
 
                 list($origin, $target) = explode('.', $join->getJoin());
 
+                /** @var string $alias */
+                $alias = $join->getAlias();
                 $mapping = $aliases[$origin][1]->getAssociationMapping($target);
-                $aliases[$join->getAlias()] = [$join->getJoin(), $this->manager->getMetadataFactory()->getMetadataFor($mapping['targetEntity'])];
+                $aliases[$alias] = [$join->getJoin(), $this->manager->getMetadataFactory()->getMetadataFor($mapping['targetEntity'])];
             }
         }
 

@@ -20,6 +20,8 @@ use Omines\DataTablesBundle\DataTableRendererInterface;
 use Omines\DataTablesBundle\DataTablesBundle;
 use Omines\DataTablesBundle\DependencyInjection\DataTablesExtension;
 use Omines\DataTablesBundle\DependencyInjection\Instantiator;
+use Omines\DataTablesBundle\Event\DataTablePostResponseEvent;
+use Omines\DataTablesBundle\Event\DataTablePreResponseEvent;
 use Omines\DataTablesBundle\Exception\InvalidArgumentException;
 use Omines\DataTablesBundle\Exception\InvalidConfigurationException;
 use Omines\DataTablesBundle\Exception\InvalidStateException;
@@ -77,8 +79,13 @@ class DataTableTest extends TestCase
     public function testDataTableState(): void
     {
         $datatable = $this->createMockDataTable();
-        $datatable->add('foo', TextColumn::class)->setMethod(Request::METHOD_GET);
+        $datatable
+            ->add('foo', TextColumn::class)
+            ->add('bar', TextColumn::class)
+            ->setMethod(Request::METHOD_GET);
         $datatable->handleRequest(Request::create('/?_dt=' . $datatable->getName()));
+
+        $this->assertTrue($datatable->hasState());
         $state = $datatable->getState();
 
         // Test sane defaults
@@ -91,7 +98,10 @@ class DataTableTest extends TestCase
         $state->setStart(5);
         $state->setLength(10);
         $state->setGlobalSearch('foo');
-        $state->setOrderBy([[0, 'asc'], [1, 'desc']]);
+        $state->setOrderBy([
+            [$datatable->getColumn(0), 'asc'],
+            [$datatable->getColumn(1), 'desc'],
+        ]);
         $state->setColumnSearch($datatable->getColumn(0), 'bar');
 
         $this->assertSame(5, $state->getStart());
@@ -109,6 +119,9 @@ class DataTableTest extends TestCase
 
         $column = $datatable->getColumn(0);
         $this->assertSame($state, $column->getState());
+
+        $datatable->clearColumns();
+        $this->assertEmpty($datatable->getColumns());
     }
 
     /**
@@ -131,6 +144,88 @@ class DataTableTest extends TestCase
         $searchColumns = $state->getSearchColumns();
         $this->assertCount(1, $searchColumns);
         $this->assertSame('foo', $searchColumns['foo']['search']);
+    }
+
+    public function testSortDirectionValidationInTable(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('direction must be one of');
+
+        $datatable = $this
+            ->createMockDataTable()
+            ->add('foo', TextColumn::class, ['searchable' => true])
+        ;
+        $datatable->addOrderBy('foo', 'bar');
+    }
+
+    public function testSortDirectionValidationInState(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('direction must be one of');
+
+        $datatable = $this
+            ->createMockDataTable()
+            ->add('foo', TextColumn::class, ['searchable' => true])
+        ;
+        $datatable->handleRequest(Request::create('/foo', Request::METHOD_POST, ['_dt' => $datatable->getName(), 'draw' => 684]));
+        $datatable->getState()->addOrderBy($datatable->getColumn(0), 'foo');
+    }
+
+    public function testRemovingInvalidColumn(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('no column with name');
+
+        $datatable = $this
+            ->createMockDataTable()
+            ->add('foo', TextColumn::class, ['searchable' => true])
+        ;
+        $datatable->remove('bar');
+    }
+
+    public function testLengthGetsNormalized(): void
+    {
+        $datatable = $this
+            ->createMockDataTable()
+            ->add('foo', TextColumn::class, ['searchable' => true])
+        ;
+        $datatable->handleRequest(Request::create('/foo', Request::METHOD_POST, ['_dt' => $datatable->getName(), 'draw' => 684, 'length' => 0]));
+        $this->assertNull($datatable->getState()->getLength());
+    }
+
+    public function testEvents(): void
+    {
+        $datatable = $this->createMockDataTable()
+            ->createAdapter(ArrayAdapter::class);
+        $datatable->handleRequest(Request::create('/foo', Request::METHOD_POST, [
+            '_dt' => $datatable->getName(),
+            'draw' => 684,
+        ]));
+        $response = $datatable->getResponse();
+
+        $event = new DataTablePostResponseEvent($datatable);
+        $this->assertSame($datatable, $event->getTable());
+        $this->assertEquals($response, $event->getResponse());
+
+        $event = new DataTablePreResponseEvent($datatable);
+        $this->assertEquals($response, $event->getResponse());
+    }
+
+    public function testInvalidSortParametersAreIgnored(): void
+    {
+        $datatable = $this
+            ->createMockDataTable()
+            ->add('foo', TextColumn::class, ['searchable' => true])
+        ;
+        $datatable->handleRequest(Request::create('/foo', Request::METHOD_POST, [
+            '_dt' => $datatable->getName(),
+            'draw' => 684,
+            'order' => [[
+                'column' => 0,
+                'dir' => 'foo',
+            ]],
+        ]));
+        $this->assertEmpty($datatable->getState()->getOrderBy());
     }
 
     public function testPostMethod(): void

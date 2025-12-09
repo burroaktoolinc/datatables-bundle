@@ -66,6 +66,7 @@ class DataTable
     public const DEFAULT_TEMPLATE = '@DataTables/datatable_html.html.twig';
     public const SORT_ASCENDING = 'asc';
     public const SORT_DESCENDING = 'desc';
+    public const SORT_OPTIONS = [self::SORT_ASCENDING, self::SORT_DESCENDING];
 
     protected ?AdapterInterface $adapter = null;
 
@@ -180,6 +181,10 @@ class DataTable
         if (!$column instanceof AbstractColumn) {
             $column = is_int($column) ? $this->getColumn($column) : $this->getColumnByName((string) $column);
         }
+        $direction = mb_strtolower($direction);
+        if (!in_array($direction, self::SORT_OPTIONS, true)) {
+            throw new \InvalidArgumentException(sprintf('Sort direction must be one of %s', implode(', ', self::SORT_OPTIONS)));
+        }
         $this->options['order'][] = [$column->getIndex(), $direction];
 
         return $this;
@@ -266,21 +271,16 @@ class DataTable
 
     public function isCallback(): bool
     {
-        return (null === $this->state) ? false : $this->state->isCallback();
+        return null !== $this->state && $this->state->isCallback();
     }
 
     public function handleRequest(Request $request): static
     {
-        switch ($this->getMethod()) {
-            case Request::METHOD_GET:
-                $parameters = $request->query;
-                break;
-            case Request::METHOD_POST:
-                $parameters = $request->request;
-                break;
-            default:
-                throw new InvalidConfigurationException(sprintf("Unknown request method '%s'", $this->getMethod()));
-        }
+        $parameters = match ($this->getMethod()) {
+            Request::METHOD_GET => $request->query,
+            Request::METHOD_POST => $request->request,
+            default => throw new InvalidConfigurationException(sprintf("Unknown request method '%s'", $this->getMethod())),
+        };
         if ($this->getName() === $parameters->get('_dt')) {
             if (null === $this->state) {
                 $this->state = DataTableState::fromDefaults($this);
