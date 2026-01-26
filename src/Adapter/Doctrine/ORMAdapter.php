@@ -228,12 +228,11 @@ class ORMAdapter extends AbstractAdapter
             $qb->select($qb->expr()->count($identifier));
 
             return (int) $qb->getQuery()->getSingleScalarResult();
-        } else {
-            $qb->resetDQLPart('groupBy');
-            $qb->select($qb->expr()->countDistinct($identifier)); /* @phpstan-ignore-line */
-
-            return (int) $qb->getQuery()->getSingleScalarResult();
         }
+        $qb->resetDQLPart('groupBy');
+        $qb->select($qb->expr()->countDistinct($identifier)); /* @phpstan-ignore-line */
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     /**
@@ -275,9 +274,9 @@ class ORMAdapter extends AbstractAdapter
 
         if (AbstractQuery::HYDRATE_ARRAY === $this->hydrationMode) {
             return '[' . implode('][', array_reverse($path)) . ']';
-        } else {
-            return implode('.', array_reverse($path));
         }
+
+        return implode('.', array_reverse($path));
     }
 
     protected function configureOptions(OptionsResolver $resolver): void

@@ -120,13 +120,12 @@ class ExcelOpenSpoutExporter extends AbstractDataTableExporter
             || $value instanceof \DateInterval
         ) {
             return Cell::fromValue($value, $style);
-        } else {
-            // Try casting to string, else put an error message in the cell
-            try {
-                return Cell::fromValue((string) $value, $style);
-            } catch (\Throwable $e) {
-                return Cell::fromValue($e->getMessage(), (new Style())->setFontItalic());
-            }
+        }
+        // Try casting to string, else put an error message in the cell
+        try {
+            return Cell::fromValue((string) $value, $style);
+        } catch (\Throwable $e) {
+            return Cell::fromValue($e->getMessage(), (new Style())->setFontItalic());
         }
     }
 
