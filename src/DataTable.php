@@ -61,6 +61,7 @@ class DataTable
         'dom',
         'responsive',
         'colReorder',
+        'searchCols',
     ];
 
     public const DEFAULT_TEMPLATE = '@DataTables/datatable_html.html.twig';
