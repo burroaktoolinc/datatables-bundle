@@ -57,13 +57,14 @@
         "symfony/intl": "^6.4.13|^7.3|^8.0.4",
         "symfony/mime": "^6.4.13|^7.3|^8.0.4",
         "symfony/phpunit-bridge": "^7.3|^8.0.3",
-        "symfony/twig-bundle": "^6.4|^7.3|^8.0.4",
+        "symfony/twig-bundle": "^6.4.32|^7.3|^8.0.4",
         "symfony/var-dumper": "^6.4.13|^7.3|^8.0.4",
         "symfony/var-exporter": "^v6.4.26|^7.4|^8.0",
         "symfony/yaml": "^6.4.13|^7.3|^8.0.1"
     },
     "conflict": {
-        "doctrine/orm": "^3.0 <3.3"
+        "doctrine/orm": "^3.0 <3.3",
+        "symfony/twig-bridge": "<6.4.19"
     },
     "suggest": {
         "doctrine/doctrine-bundle": "For integrated access to Doctrine object managers",
