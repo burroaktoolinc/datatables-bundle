@@ -102,5 +102,10 @@ abstract class AbstractFilter
     }
 
     abstract public function isValidValue(mixed $value): bool;
+
+    public function getSearchExpression(mixed $value, ?string $field): object|string|null
+    {
+        return null;
+    }
 }
 
