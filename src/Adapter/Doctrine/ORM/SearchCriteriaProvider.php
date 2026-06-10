@@ -45,6 +45,11 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
                     if (!$filter->isValidValue($search)) {
                         continue;
                     }
+                    $expr = $filter->getSearchExpression($search, $column->getField());
+                    if($expr) {
+                        $queryBuilder->andWhere($expr);
+                        continue;
+                    }
                     $queryBuilder->andWhere($this->getFilterSearchComparison($filter, $column, $search));
                 } else {
                     $queryBuilder->andWhere($this->getColumnSearchComparison($column, $search));
