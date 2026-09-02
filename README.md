@@ -1,3 +1,11 @@
+## This fork is abandoned
+
+I enjoyed using omines but with datatables.net v3 we've since moved to [ux-datatables](https://github.com/pentiminax/ux-datatables) and stimulus and killed jquery (hurray?)
+
+There is a fork of ux-datatables for burroaktoolinc with fixes that go upstream [fork-for-bugfixes](https://github.com/burroaktoolinc/ux-datatables) if you're curious
+
+Thanks!
+
 # Symfony DataTables Bundle
 [![Latest Stable Version](https://poser.pugx.org/omines/datatables-bundle/version)](https://packagist.org/packages/omines/datatables-bundle)
 [![Total Downloads](https://poser.pugx.org/omines/datatables-bundle/downloads)](https://packagist.org/packages/omines/datatables-bundle)
